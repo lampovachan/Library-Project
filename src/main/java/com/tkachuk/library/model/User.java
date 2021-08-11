@@ -1,12 +1,8 @@
 package com.tkachuk.library.model;
 
-import java.util.Set;
-
-import com.tkachuk.library.dto.UserDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
@@ -19,18 +15,22 @@ public class User {
     private String password;
     private boolean enabled;
 
-    @DBRef
-    private Set<Role> roles;
+    private String role;
 
     public User() {
     }
 
-
-    public User(UserDto userDTO) {
-        this.username = userDTO.getUsername();
-        this.password = userDTO.getPassword();
+    public User(String username, String encode) {
+        this.username = username;
+        this.password = encode;
     }
 
+    public User(String username, String encode, String role, Boolean enabled) {
+        this.username = username;
+        this.password = encode;
+        this.role = role;
+        this.enabled = enabled;
+    }
 
     public String getId() {
         return this.id;
@@ -72,12 +72,12 @@ public class User {
     }
 
 
-    public Set<Role> getRoles() {
-        return this.roles;
+    public String getRole() {
+        return this.role;
     }
 
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

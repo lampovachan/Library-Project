@@ -1,12 +1,18 @@
 package com.tkachuk.library.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
+
 public class BookDto {
+    @ApiModelProperty(required = false, hidden = true)
     private String id;
-    private String isbn;
-    private String title;
     private String author;
-    private int pages;
+    private String title;
+    private List<String> genres;
     private String image;
+    private String description;
+    private String fileId;
 
     public String getId() {
         return id;
@@ -14,14 +20,6 @@ public class BookDto {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
     }
 
     public String getTitle() {
@@ -40,19 +38,35 @@ public class BookDto {
         this.author = author;
     }
 
-    public int getPages() {
-        return pages;
-    }
-
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-
     public String getImage() {
         return image;
     }
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public List<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 }

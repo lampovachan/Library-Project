@@ -1,40 +1,35 @@
 package com.tkachuk.library.model;
 
 import com.tkachuk.library.dto.BookDto;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
+import java.util.List;
 
 @Document(collection = "books")
 public class Book {
     @Id
+    @ApiModelProperty(required = false, hidden = true)
     private String id;
-
-    private String isbn;
-    private String title;
     private String author;
-    private int pages;
+    private String title;
+    private List<String> genres;
     private String image;
+    private String description;
+    private String fileId;
+    private Date created;
+
+    public Book(BookDto bookDTO, Date created) {
+        this.author = bookDTO.getAuthor();
+        this.title = bookDTO.getTitle();
+        this.image = bookDTO.getImage();
+        this.created = created;
+    }
 
     public Book() {
-    }
 
-    public Book(String isbn, String title, String author, int pages, String image) {
-        super();
-        this.isbn = isbn;
-        this.title = title;
-        this.author = author;
-        this.pages = pages;
-        this.image = image;
-    }
-
-
-    public Book(BookDto bookDTO) {
-        super();
-        this.isbn = bookDTO.getIsbn();
-        this.title = bookDTO.getTitle();
-        this.author = bookDTO.getAuthor();
-        this.pages = bookDTO.getPages();
-        this.image = bookDTO.getImage();
     }
 
 
@@ -45,15 +40,6 @@ public class Book {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-
-    public String getIsbn() {
-        return this.isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
     }
 
 
@@ -76,22 +62,43 @@ public class Book {
         this.author = author;
     }
 
-
-    public int getPages() {
-        return this.pages;
-    }
-
-
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-
-
     public String getImage() {
         return this.image;
     }
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public List<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 }

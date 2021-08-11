@@ -1,6 +1,19 @@
-version: '2'
+version: '3'
 services:
     mongodb:
         image: mongo
         ports:
             - "27017:27017"
+
+    localstack:
+        image: localstack/localstack
+        ports:
+            - "4566-4599:4566-4599"
+        environment:
+            - SERVICES=s3
+            - PORT_WEB_UI=9000
+            - AWS_ACCESS_KEY_ID=AXXXXXXXXXXXXE
+            - AWS_SECRET_ACCESS_KEY=wXXXXXXXXXXXXY
+            - AWS_DEFAULT_REGION=us-west-2
+            - HOSTNAME_EXTERNAL=localhost
+            - HOSTNAME=localstack

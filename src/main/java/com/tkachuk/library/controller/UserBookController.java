@@ -1,24 +1,24 @@
 package com.tkachuk.library.controller;
 
-import com.tkachuk.library.dto.UserBookDto;
-import com.tkachuk.library.model.UserBook;
-import com.tkachuk.library.service.CustomUserDetailsService;
-import com.tkachuk.library.service.UserBookService;
+import com.amazonaws.services.s3.model.S3Object;
+import com.tkachuk.library.model.Book;
+import com.tkachuk.library.repository.BookRepository;
+import com.tkachuk.library.service.BookService;
+import com.tkachuk.library.security.services.UserDetailsServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
+import org.elasticsearch.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-@Api(value = "UserBook Controller")
+import java.util.Optional;
+
+@Api(value = "User Book Controller")
 @CrossOrigin(
         origins = "*",
         methods = { RequestMethod.GET,
@@ -29,45 +29,61 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/userbooks")
 @RestController
 public class UserBookController {
-    @Autowired
-    CustomUserDetailsService userService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final BookService bookService;
 
     @Autowired
-    UserBookService userBookService;
+    private BookRepository bookRepository;
 
-    @ApiOperation(value = "Fetches all UserBooks.")
+    @Autowired
+    public UserBookController(UserDetailsServiceImpl userDetailsService, BookService bookService) {
+        this.userDetailsService = userDetailsService;
+        this.bookService = bookService;
+    }
+
+    @ApiOperation(value = "Fetches all Books.", authorizations = { @Authorization(value="jwtToken") })
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping()
-    public Iterable<UserBook> getUserBooks() {
-        return this.userBookService.getUserBooks();
+    public Iterable<Book> getBooks() {
+        return bookService.getBooks();
     }
 
-    @ApiOperation(value = "Fetche a specific UserBook.")
+    @ApiOperation(value = "Find Books by a specific author.", authorizations = { @Authorization(value = "jwtToken")})
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "/by-author")
+    public Iterable<Book> filterByAuthor(@RequestParam String author) {
+        return bookService.getBooksByAuthor(author);
+    }
+
+    @ApiOperation(value = "Sort Books by date ascending.", authorizations = { @Authorization(value = "jwtToken")})
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "by-date")
+    public Iterable<Book> sortByDate() {
+        return bookService.sortBooksByDateASC();
+    }
+
+    @ApiOperation(value = "Fetch a specific Book.", authorizations = { @Authorization(value="jwtToken") })
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/{id}")
-    public UserBook getSpecificUserBook(@PathVariable("id") String id) {
-        return this.userBookService.getSpecificUserBook(id);
+    public Book getSpecificBook(@PathVariable("id") String id) {
+        return bookService.getSpecificBook(id);
     }
 
-    @ApiOperation(value = "Post a UserBook.")
-    @PostMapping()
-    public UserBook postUserBook(@RequestBody UserBookDto userBookDTO) {
-        return this.userBookService.createUserBook(userBookDTO);
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/getFile")
+    @ApiOperation(value = "", authorizations = { @Authorization(value="jwtToken") })
+    public ResponseEntity<?> getFile(@RequestParam String bookId) {
+        Optional<Book> book = bookRepository.findById(bookId);
+        if (book.isEmpty())
+            return ResponseEntity.notFound().build();
+        String fileUrl = book.get().getFileId();
+
+        S3Object object = bookService.getBookFileFromS3(fileUrl.split("/")[1]);
+        return ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .cacheControl(CacheControl.noCache())
+                .header("Content-Disposition", "attachment; filename=" + book.get().getFileId().split("/")[1])
+                .body(new InputStreamResource(object.getObjectContent()));
     }
 
-    @ApiOperation(value = "Delete a UserBook.")
-    @DeleteMapping(value = "/{id}")
-    public boolean deleteUserBook(@PathVariable("id") String id) {
-        return this.userBookService.deleteUserBook(id);
-    }
-
-    @ApiOperation(value = "Edit a UserBook.")
-    @PutMapping(value = "/{id}")
-    public UserBook putUserBook(@PathVariable("id") String id, @RequestBody UserBookDto userBookDTO) {
-        return this.userBookService.editUserBook(id, userBookDTO);
-    }
-
-    @ApiOperation(value = "Fetch all UserBooks for a specific User.")
-    @GetMapping(value="/user/{userId}")
-    public Iterable<UserBook> getUserBooksForUser(@PathVariable("userId") String userId) {
-        return this.userBookService.getUserBooksForUser(userId);
-    }
 }

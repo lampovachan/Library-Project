@@ -4,3 +4,16 @@ spring:
             url: jdbc:mongodb://127.0.0.1:27017/book_library
 server:
     port: 8171
+tkachuk:
+    app:
+        jwtExpiration: 3600000
+        jwtSecret: jwtappdemo
+localstack:
+    enabled: true
+    s3:
+        bucketName: image-user
+        bucketName2: book-user
+        enabled: true
+    services: S3
+    sqs:
+        enabled: false
