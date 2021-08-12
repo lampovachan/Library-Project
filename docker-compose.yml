@@ -17,3 +17,10 @@ services:
             - AWS_DEFAULT_REGION=us-west-2
             - HOSTNAME_EXTERNAL=localhost
             - HOSTNAME=localstack
+    elasticsearch:
+        image: elasticsearch:7.5.2
+        ports:
+            - "9200:9200"
+        environment:
+            - xpack.security.enabled=false
+            - discovery.type=single-node

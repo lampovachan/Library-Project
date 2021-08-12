@@ -30,7 +30,7 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
-    public List<Book> getBooks(String genre, String author, boolean asc, boolean desc) {
+    public List<Book> getBooks(String genre, String author, String order) {
         Query query = new Query();
         if (genre!=null) {
             query.addCriteria(Criteria.where("genre").is(genre));
@@ -40,10 +40,10 @@ public class BookService {
             query.addCriteria(Criteria.where("author").is(author));
             return mongoTemplate.find(query, Book.class);
         }
-        if (asc) {
+        if (order!=null && order.equals("asc")) {
             return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "created"));
         }
-        if (desc) {
+        else if (order!=null && order.equals("desc")) {
             return bookRepository.findAll(Sort.by(Sort.Direction.DESC, "created"));
         }
         else {

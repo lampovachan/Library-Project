@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Document(indexName = "book", type = "book")
+//@Document(indexName = "book", type = "book")
 public class EsBook implements Serializable {
     private static final long serialVersionUID = -3442422877407279457L;
 

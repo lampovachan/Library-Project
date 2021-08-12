@@ -40,8 +40,8 @@ public class UserBookController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping()
     public Iterable<Book> getBooks(@RequestParam(required = false) String genre, @RequestParam(required = false) String author,
-                                   @RequestParam(required = false) boolean byDateAsc, @RequestParam(required = false) boolean byDateDesc) {
-        return bookService.getBooks(genre, author, byDateAsc, byDateDesc);
+                                   @RequestParam(required = false) String order) {
+        return bookService.getBooks(genre, author, order);
     }
 
     @ApiOperation(value = "Fetch a specific Book.", authorizations = { @Authorization(value="jwtToken") })
