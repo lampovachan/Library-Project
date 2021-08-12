@@ -3,6 +3,7 @@ package com.tkachuk.library.controller;
 import com.tkachuk.library.dto.BookDto;
 import com.tkachuk.library.model.Book;
 import com.tkachuk.library.service.BookService;
+import com.tkachuk.library.service.PhotoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
@@ -27,10 +28,12 @@ import java.io.IOException;
 @RestController
 public class AdminBookController {
     private final BookService bookService;
+    private final PhotoService photoService;
 
     @Autowired
-    public AdminBookController(BookService bookService) {
+    public AdminBookController(BookService bookService, PhotoService photoService) {
         this.bookService = bookService;
+        this.photoService = photoService;
     }
 
     @ApiOperation(value = "Post a Book.", authorizations = { @Authorization(value="jwtToken") })
@@ -58,6 +61,13 @@ public class AdminBookController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/uploadFile")
     public String uploadFile(@RequestPart(value = "file") MultipartFile multipartFile, @PathVariable String id) throws IOException {
-        return bookService.uploadBookFile(multipartFile, id);
+        return photoService.uploadBookFile(multipartFile, id);
+    }
+
+    @ApiOperation(value = "Upload a Photo.", authorizations = { @Authorization(value="jwtToken") })
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/uploadPhoto")
+    public String uploadPhoto(@RequestPart(value = "file") MultipartFile multipartFile, @PathVariable String id) throws IOException {
+        return photoService.uploadPhoto(multipartFile, id);
     }
 }

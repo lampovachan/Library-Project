@@ -1,5 +1,6 @@
 package com.tkachuk.library.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -8,13 +9,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "users")
 public class User {
     @Id
+    @ApiModelProperty(required = false, hidden = true)
     private String id;
 
     @Indexed(unique = true, direction = IndexDirection.DESCENDING)
     private String username;
     private String password;
+    @ApiModelProperty(required = false, hidden = true)
     private boolean enabled;
 
+    @ApiModelProperty(required = false, hidden = true)
     private String role;
 
     public User() {

@@ -16,8 +16,10 @@ public class Book {
     private String author;
     private String title;
     private List<String> genres;
+    @ApiModelProperty(required = false, hidden = true)
     private String image;
     private String description;
+    @ApiModelProperty(required = false, hidden = true)
     private String fileId;
     private Date created;
 
