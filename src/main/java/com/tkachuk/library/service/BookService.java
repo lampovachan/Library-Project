@@ -6,8 +6,11 @@ import java.util.Optional;
 
 import com.tkachuk.library.dto.BookDto;
 import com.tkachuk.library.model.Book;
+import com.tkachuk.library.model.elastic.EsBook;
 import com.tkachuk.library.repository.BookRepository;
+import com.tkachuk.library.service.elastic.EsBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,10 +23,13 @@ public class BookService {
 
     private final MongoTemplate mongoTemplate;
 
+    private final EsBookService esBookService;
+
     @Autowired
-    public BookService(BookRepository bookRepository, MongoTemplate mongoTemplate) {
+    public BookService(BookRepository bookRepository, MongoTemplate mongoTemplate, EsBookService esBookService) {
         this.bookRepository = bookRepository;
         this.mongoTemplate = mongoTemplate;
+        this.esBookService = esBookService;
     }
 
     public Optional<Book> findById(String id) {
@@ -51,6 +57,23 @@ public class BookService {
         }
     }
 
+    public Iterable<EsBook> searchForBooks(String author, String title, String description, PageRequest pageRequest) {
+        if (author!=null) {
+            return esBookService.findByAuthor(author, pageRequest);
+        }
+
+        if (title!=null) {
+            return esBookService.findByTitle(title);
+        }
+
+        if (description!=null) {
+            return esBookService.findByDescription(description, pageRequest);
+        }
+        else {
+            return esBookService.findAll();
+        }
+    }
+
     public Book getSpecificBook(String id) {
         Optional<Book> bookOptional = this.bookRepository.findById(id);
         return bookOptional.orElse(null);
@@ -58,25 +81,32 @@ public class BookService {
 
     public Book createBook(BookDto bookDTO) {
         Book book = new Book(bookDTO, new Date());
+        EsBook esBook = new EsBook(bookDTO);
+        esBookService.save(esBook);
         return bookRepository.save(book);
     }
 
     public boolean deleteBook(String id) {
-        Optional<Book> bookOptional = this.bookRepository.findById(id);
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        Optional <EsBook> esBookOptional = esBookService.findOne(id);
+        EsBook esBook = esBookOptional.orElse(null);
         Book book = bookOptional.orElse(null);
 
         if (book == null) {
             return false;
         }
 
-        this.bookRepository.deleteById(id);
+        bookRepository.deleteById(id);
+        esBookService.delete(esBook);
 
         return true;
     }
 
     public Book editBook(String id, BookDto bookDTO) {
-        Optional<Book> bookOptional = this.bookRepository.findById(id);
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        Optional<EsBook> esBookOptional = esBookService.findOne(id);
         Book foundBook = bookOptional.orElse(null);
+        EsBook esBook = esBookOptional.orElse(null);
 
         if (foundBook == null) {
             return null;
@@ -88,6 +118,11 @@ public class BookService {
         foundBook.setFileId(bookDTO.getFileId());
         foundBook.setImage(bookDTO.getImage());
 
-        return this.bookRepository.save(foundBook);
+        esBook.setAuthor(esBook.getAuthor());
+        esBook.setTitle(esBook.getTitle());
+        esBook.setDescription(esBook.getDescription());
+
+        esBookService.save(esBook);
+        return bookRepository.save(foundBook);
     }
 }

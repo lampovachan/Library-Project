@@ -1,5 +1,6 @@
 package com.tkachuk.library.model.elastic;
 
+import com.tkachuk.library.dto.BookDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -18,15 +19,10 @@ public class EsBook implements Serializable {
 
     private String description;
 
-    public EsBook(String title, String description) {
-        this.title = title;
-        this.description = description;
-    }
-
-    public EsBook(String author, String title, String description) {
-        this.author = author;
-        this.title = title;
-        this.description = description;
+    public EsBook(BookDto book) {
+        this.author = book.getAuthor();
+        this.title = book.getTitle();
+        this.description = book.getDescription();
     }
 
     public String getId() {
@@ -59,7 +55,7 @@ public class EsBook implements Serializable {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {

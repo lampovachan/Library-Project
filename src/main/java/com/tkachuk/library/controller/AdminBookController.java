@@ -30,13 +30,11 @@ import java.io.IOException;
 public class AdminBookController {
     private final BookService bookService;
     private final PhotoService photoService;
-    private final EsBookService esBookService;
 
     @Autowired
-    public AdminBookController(BookService bookService, PhotoService photoService, EsBookService esBookService) {
+    public AdminBookController(BookService bookService, PhotoService photoService) {
         this.bookService = bookService;
         this.photoService = photoService;
-        this.esBookService = esBookService;
     }
 
     @ApiOperation(value = "Post a Book.", authorizations = { @Authorization(value="jwtToken") })
