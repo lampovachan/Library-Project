@@ -4,6 +4,7 @@ import com.tkachuk.library.dto.BookDto;
 import com.tkachuk.library.model.Book;
 import com.tkachuk.library.service.BookService;
 import com.tkachuk.library.service.PhotoService;
+import com.tkachuk.library.service.elastic.EsBookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
@@ -29,11 +30,13 @@ import java.io.IOException;
 public class AdminBookController {
     private final BookService bookService;
     private final PhotoService photoService;
+    private final EsBookService esBookService;
 
     @Autowired
-    public AdminBookController(BookService bookService, PhotoService photoService) {
+    public AdminBookController(BookService bookService, PhotoService photoService, EsBookService esBookService) {
         this.bookService = bookService;
         this.photoService = photoService;
+        this.esBookService = esBookService;
     }
 
     @ApiOperation(value = "Post a Book.", authorizations = { @Authorization(value="jwtToken") })

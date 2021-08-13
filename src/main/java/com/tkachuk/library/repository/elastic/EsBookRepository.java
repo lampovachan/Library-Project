@@ -5,13 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
+import java.util.List;
+
 
 public interface EsBookRepository extends ElasticsearchRepository<EsBook,String> {
+    Page<EsBook> findByAuthor(String author, Pageable pageable);
 
-//    Page<EsBook> findDistinctByTitleContainingOrContentContainingOrAuthorContaining(String title, String description, String author,
-//                                                                                    Pageable pageable);
-//
-//    Page<EsBook> findDistinctByTitleContainingOrContentContaining(String title,String content, Pageable pageable);
-//
-//    void deleteEsBookByArticleId(String id);
+    List<EsBook> findByTitle(String title);
+
+    Page<EsBook> findByDescription(String description, Pageable pageable);
 }
