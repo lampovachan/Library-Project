@@ -9,9 +9,11 @@ import java.util.List;
 
 
 public interface EsBookRepository extends ElasticsearchRepository<EsBook,String> {
-    Page<EsBook> findByAuthor(String author, Pageable pageable);
+    List<EsBook> findByAuthor(String author);
 
     List<EsBook> findByTitle(String title);
 
-    Page<EsBook> findByDescription(String description, Pageable pageable);
+    List<EsBook> findByDescription(String description);
+
+    List<EsBook> findByAuthorTitleDescription(String author, String title, String description);
 }

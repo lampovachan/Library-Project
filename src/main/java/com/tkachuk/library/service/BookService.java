@@ -57,9 +57,9 @@ public class BookService {
         }
     }
 
-    public Iterable<EsBook> searchForBooks(String author, String title, String description, PageRequest pageRequest) {
+    public Iterable<EsBook> searchForBooks(String author, String title, String description) {
         if (author!=null) {
-            return esBookService.findByAuthor(author, pageRequest);
+            return esBookService.findByAuthor(author);
         }
 
         if (title!=null) {
@@ -67,7 +67,7 @@ public class BookService {
         }
 
         if (description!=null) {
-            return esBookService.findByDescription(description, pageRequest);
+            return esBookService.findByDescription(description);
         }
         else {
             return esBookService.findAll();

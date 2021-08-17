@@ -2,6 +2,7 @@ package com.tkachuk.library.controller;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.tkachuk.library.model.Book;
+import com.tkachuk.library.model.elastic.EsBook;
 import com.tkachuk.library.service.BookService;
 import com.tkachuk.library.service.PhotoService;
 import io.swagger.annotations.Api;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -82,5 +84,12 @@ public class UserBookController {
                 .cacheControl(CacheControl.noCache())
                 .header("Content-Disposition", "attachment; filename=" + book.get().getFileId().split("/")[1])
                 .body(new InputStreamResource(object.getObjectContent()));
+    }
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/findBook")
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "jwtToken")})
+    public Iterable<EsBook> findBooks(@RequestParam(required = false) String author, @RequestParam(required = false) String title,
+                                      @RequestParam(required = false) String description) {
+        return bookService.searchForBooks(author, title, description);
     }
 }

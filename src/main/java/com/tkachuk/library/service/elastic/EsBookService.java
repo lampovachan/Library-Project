@@ -37,17 +37,16 @@ public class EsBookService {
         return bookRepository.findAll();
     }
 
-    public Page<EsBook> findByAuthor(String author, PageRequest pageRequest) {
-        return bookRepository.findByAuthor(author, pageRequest);
+    public List<EsBook> findByAuthor(String author) {
+        return bookRepository.findByAuthor(author);
     }
 
     public List<EsBook> findByTitle(String title) {
         return bookRepository.findByTitle(title);
     }
 
-    public Page<EsBook> findByDescription(String description, PageRequest pageRequest) {
-        return bookRepository.findByDescription(description, pageRequest);
+    public List<EsBook> findByDescription(String description) {
+        return bookRepository.findByDescription(description);
     }
-
 }
 
